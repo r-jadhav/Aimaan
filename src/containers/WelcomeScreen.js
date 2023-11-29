@@ -21,10 +21,10 @@ export default function WelcomeScreen() {
       resizeMode="cover">
       <View style={localStyles.container}>
       <EButton
-            title="Getting Start"
-            type={'S16'}
-            containerStyle={localStyles.signBtnContainer}
-            onPress={() => navigation.navigate(StackNav.HomeTab)}
+          title="Getting Start"
+          type={'S16'}
+          containerStyle={localStyles.signBtnContainer}
+          onPress={() => navigation.navigate(StackNav.HomeTab)}
           />
       </View>
     </ImageBackground>
@@ -39,7 +39,7 @@ const localStyles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-end',
-    paddingBottom: 130,
+    paddingBottom: 200,
     width: '80%',
     marginLeft: 'auto',
     marginRight: 'auto',

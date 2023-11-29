@@ -131,7 +131,7 @@ const OnBoarding = ({navigation}) => {
             ))}
           </View>
           <EButton
-            title={currentIndex === 2 ? strings.getStarted : strings.next}
+            title={currentIndex === 2 ? strings. : strings.next}
             containerStyle={localStyles.submitButton}
             type={'M18'}
             color={colors.white}

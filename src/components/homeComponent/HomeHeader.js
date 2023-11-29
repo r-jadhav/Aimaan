@@ -1,47 +1,58 @@
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import { StyleSheet, View, ImageBackground, TextInput} from 'react-native';
+import React, {useState,useCallback} from 'react';
 import {useSelector} from 'react-redux';
-import {useNavigation} from '@react-navigation/native';
 
 // custom imports
 import {styles} from '../../themes';
-import {NotificationDark, NotificationLight} from '../../assets/svgs';
 import EText from '../common/EText';
 import {moderateScale} from '../../common/constants';
-import {StackNav} from '../../navigation/NavigationKeys';
+import images from '../../assets/images';
+import SearchComponent from './SearchComponent';
+import LinearGradient from 'react-native-linear-gradient';
 
 function HomeHeader() {
-  const navigation = useNavigation();
-  const colors = useSelector(state => state.theme.theme);
 
-  const onPressNotification = () => navigation.navigate(StackNav.Notification);
+  const colors = useSelector(state => state.theme.theme);
+  const [inputValue, setInputValue] = useState('');
+
+  const handleInputChange = (text) => {
+    setInputValue(text);
+  };
+
+  // const [search, setSearch] = useState('search');
+  // const onSearchInput = useCallback(text => setSearch(text), []);
 
   return (
-    <View style={localStyles.headerContainer}>
-      <Image
-        source={{
-          uri: 'https://images.unsplash.com/photo-1619895862022-09114b41f16f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjJ8fHVzZXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60',
-        }}
-        style={localStyles.userImageStyle}
-      />
-      <View style={localStyles.textContainer}>
-        <EText type="m16" numberOfLines={1} color={colors.primaryTextColor}>
-          Good Morning 👋
-        </EText>
-        <EText type="B20" numberOfLines={1} color={colors.primaryTextColor}>
-          Andrew Ainsley
-        </EText>
-      </View>
+    <ImageBackground
+    source={images.banner}
+    style={localStyles.imageStyle}
+    resizeMode="cover">
 
-      <TouchableOpacity
-        onPress={onPressNotification}
-        style={[
-          localStyles.notificationContainer,
-          {borderColor: colors.dark ? colors.grayScale8 : colors.grayScale3},
-        ]}>
-        {colors.dark ? <NotificationDark /> : <NotificationLight />}
-      </TouchableOpacity>
+<LinearGradient
+        colors={['rgba(0,223,29,0.6)', 'rgba(0,128,83,0.6)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={localStyles.gradientContainer}
+      >
+    <View style={localStyles.headerContainer}>
+      <View style={localStyles.textContainer}>
+        <EText type="m20" numberOfLines={1} color={colors.white}>
+         Welcome to Aimaan
+         </EText> 
+         {/* <SearchComponent search={search} onSearchInput={onSearchInput} /> */}
+
+         <TextInput
+        style={localStyles.input}
+        placeholder="Search here..."
+        value={inputValue}
+        onChangeText={handleInputChange}
+      />
+
+      </View>
     </View>
+    </LinearGradient>
+  </ImageBackground>
+
   );
 }
 
@@ -52,21 +63,38 @@ const localStyles = StyleSheet.create({
     ...styles.rowSpaceBetween,
     ...styles.flex,
     ...styles.mt15,
+   flex:0,
+   marginHorizontal:20,
   },
-  userImageStyle: {
-    width: moderateScale(50),
-    height: moderateScale(50),
-    borderRadius: moderateScale(25),
+  imageStyle: {
+    width: '100%',
+    height: moderateScale(160),
+    resizeMode: 'contain',
+    alignSelf: 'center',
   },
   textContainer: {
     ...styles.mh10,
     ...styles.flex,
+    ...styles.mt10
   },
   notificationContainer: {
     ...styles.center,
     ...styles.ph10,
     ...styles.pv10,
-    borderWidth: moderateScale(1),
-    borderRadius: moderateScale(26),
+  },
+  editIcon: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+  },
+  gradientContainer: {
+    flex: 1,
+  },
+  input: {
+    height: 50,
+    padding: 10,
+    backgroundColor:'rgba(255,255,255,0.5)',
+    borderRadius:5,
+    marginTop:20
   },
 });

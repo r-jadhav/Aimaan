@@ -11,4 +11,7 @@ export default {
   videogallerys: require('../images/menu/videogallerys.png'),
   speech: require('../images/menu/speech.png'),
   reading64: require('../images/menu/reading-64.png'),
+  quran1: require('../images/quran1.jpeg'),
+  quran2: require('../images/quran2.jpeg'),
+  banner: require('../images/banner.png'),
 };
