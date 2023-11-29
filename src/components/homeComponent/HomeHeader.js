@@ -37,7 +37,7 @@ function HomeHeader() {
     <View style={localStyles.headerContainer}>
       <View style={localStyles.textContainer}>
         <EText type="m20" numberOfLines={1} color={colors.white}>
-         Welcome to Aimaan
+         Welcome to Aiman
          </EText> 
          {/* <SearchComponent search={search} onSearchInput={onSearchInput} /> */}
 

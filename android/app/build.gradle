@@ -93,9 +93,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.Aimaan"
+    namespace "com.Aiman"
     defaultConfig {
-        applicationId "com.Aimaan"
+        applicationId "com.Aiman"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 6

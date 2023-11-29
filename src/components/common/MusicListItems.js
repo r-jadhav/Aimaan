@@ -1,25 +1,68 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Dimensions, Image } from 'react-native';
 import {
     StyleSheet,
     View,
     Text,
     TouchableOpacity,
+    Slider,
+    FlatList,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import EI from 'react-native-vector-icons/EvilIcons';
-const { height, width } = Dimensions.get('window')
+import TrackPlayer, { Capability, usePlaybackState, useProgress, State } from 'react-native-track-player';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import { moderateScale } from '../../common/constants';
+import { listData } from '../../api/constant';
 
 const MusicListItems = ({ item, index }) => {
-    const navigation = useNavigation()
-    const playingIndexRef = useRef(-1);
+
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentAudio, setCurrentAudio] = useState(0);
+
+    const progress = useProgress();
+    const playbackState = usePlaybackState();
+    const ref = useRef()
+
+
+    useEffect(() => {
+        setupPlayer();
+    }, []);
+
+    const setupPlayer = async () => {
+        try {
+            await TrackPlayer.setupPlayer();
+            await TrackPlayer.updateOptions({
+                capabilities: [
+                    Capability.Play,
+                    Capability.Pause,
+                    Capability.SkipToNext,
+                    Capability.SkipToPrevious,
+                    Capability.Stop,
+                ],
+                compactCapabilities: [Capability.Play, Capability.Pause],
+            });
+            await TrackPlayer.add(listData);
+            await TrackPlayer.skip(currentAudio);
+            togglePlayback(playbackState);
+        } catch (error) {
+            console.error('Error setting up player', error);
+        }
+    };
+
+    const togglePlayback = async playbackState => {
+        console.log("playbackState",playbackState)
+        if (playbackState === State.Paused || playbackState === State.Ready || playbackState === State.Buffering || playbackState === State.Connecting) {
+            await TrackPlayer.play();
+        } else {
+            await TrackPlayer.pause();
+        }
+    }
+
     return (
         <View style={styles.singleContainer}>
+
             <View style={styles.cardTopRow}>
                 <View style={styles.halrow}>
                     <View style={{ flexDirection: 'column' }}>
                         <Text style={styles.head}>{item.title}</Text>
-                        <Text style={styles.headdesp}>{item.category}</Text>
                     </View>
                 </View>
                 <View style={styles.moredot}>
@@ -27,7 +70,8 @@ const MusicListItems = ({ item, index }) => {
                         style={[
                             styles.smallDot,
                             { backgroundColor: item.dot },
-                        ]}></View>
+                        ]}
+                    ></View>
                 </View>
             </View>
 
@@ -36,56 +80,42 @@ const MusicListItems = ({ item, index }) => {
                     display: 'flex',
                     flexDirection: 'row',
                     justifyContent: 'space-between',
-                }}>
-
+                    alignItems: 'center'
+                }}
+            >
                 <TouchableOpacity
-                    style={[
-                        styles.button,
-                        {
-                            backgroundColor:
-                                playingIndexRef.current === index ? 'red' : 'green',
-                        },
-                    ]}
-                    onPress={() => {
-                        navigation.navigate('Music', { data: item, index: index })
+                    onPress={async () => {
+                        togglePlayback(playbackState);
                     }}>
-                    <Text style={styles.buttonText}>
-                        Play
-                    </Text>
-                </TouchableOpacity>
-            </View>
+                    {playbackState == State.Paused || playbackState == State.Ready ? <AntDesign
+                        name="play"
+                        size={moderateScale(25)}
+                        color={'#000'}
+                    /> : <AntDesign
+                        name="pausecircle"
+                        size={moderateScale(25)}
+                        color={'#000'}
+                    />}
 
-            {/* <Image
-    style={{ width: '100%', height: 150, borderRadius: 10 }}
-    source={item.profileImg}
-/> */}
-            <View
-                style={{
-                    paddingTop: 25,
-                    marginBottom: 20,
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <EI
-                        size={25}
-                        color="#000"
-                        name="user"
-                        style={styles.backIcon}></EI>
-                    <Text style={styles.headdesp}>{item.artist}</Text>
+                </TouchableOpacity>
+
+                <View style={styles.sliderView}>
+                    <Slider
+                        value={progress.position}
+                        maximumValue={progress.duration}
+                        minimumValue={0}
+                        thumbStyle={{ width: 20, height: 20 }}
+                        thumbTintColor={'black'}
+                        onValueChange={async value => {
+                            await TrackPlayer.seekTo(value);
+                        }}
+                    />
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <EI
-                        size={25}
-                        color="#000"
-                        name="calendar"
-                        style={styles.backIcon}></EI>
-                    <Text style={styles.headdesp}>{item.date}</Text>
-                </View>
+
             </View>
         </View>
-    )
-}
+    );
+};
 
 export default MusicListItems;
 
@@ -108,6 +138,7 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         elevation: 5,
         paddingHorizontal: 20,
+        paddingBottom: 15,
     },
     cardTopRow: {
         flexDirection: 'row',
@@ -133,8 +164,8 @@ const styles = StyleSheet.create({
         fontWeight: '600'
     },
     headdesp: {
-     fontSize: 12,
-     color: '#222',
+        fontSize: 12,
+        color: '#222',
     },
 
     title: {
@@ -143,5 +174,9 @@ const styles = StyleSheet.create({
         color: '#4C4E66',
         lineHeight: 36,
         marginLeft: 10,
+    },
+    sliderView: {
+        alignSelf: 'center',
+        width: '90%'
     },
 });

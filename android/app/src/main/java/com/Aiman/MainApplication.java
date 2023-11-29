@@ -1,4 +1,4 @@
-package com.Aimaan;
+package com.Aiman;
 
 import android.app.Application;
 import com.facebook.react.PackageList;
