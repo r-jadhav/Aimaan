@@ -14,11 +14,12 @@ import { listData } from '../../api/constant';
 
 const MusicListItems = ({ item, index }) => {
 
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [currentAudio, setCurrentAudio] = useState(0);
+    console.log("index",index )
+
+    const [currentAudio, setCurrentAudio] = useState(index);
 
     const progress = useProgress();
-    const playbackState = usePlaybackState();
+    const playbackState = usePlaybackState()
     const ref = useRef()
 
 
@@ -48,7 +49,7 @@ const MusicListItems = ({ item, index }) => {
     };
 
     const togglePlayback = async playbackState => {
-        console.log("playbackState",playbackState)
+        console.log(playbackState)
         if (playbackState === State.Paused || playbackState === State.Ready || playbackState === State.Buffering || playbackState === State.Connecting) {
             await TrackPlayer.play();
         } else {
@@ -65,14 +66,6 @@ const MusicListItems = ({ item, index }) => {
                         <Text style={styles.head}>{item.title}</Text>
                     </View>
                 </View>
-                <View style={styles.moredot}>
-                    <View
-                        style={[
-                            styles.smallDot,
-                            { backgroundColor: item.dot },
-                        ]}
-                    ></View>
-                </View>
             </View>
 
             <View
@@ -83,6 +76,7 @@ const MusicListItems = ({ item, index }) => {
                     alignItems: 'center'
                 }}
             >
+                
                 <TouchableOpacity
                     onPress={async () => {
                         togglePlayback(playbackState);

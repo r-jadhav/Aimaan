@@ -9,7 +9,7 @@ import { useRoute } from '@react-navigation/native';
 import EHeader from '../../../components/common/EHeader';
 import Sound from 'react-native-sound';
 import { listData } from '../../../api/constant';
-import PlaySound from '../../../components/common/PlaySound';
+import PlayAudio from '../../../components/common/PlayAudio';
 
 const ListScreen = () => {
     const route = useRoute();
@@ -79,7 +79,7 @@ const ListScreen = () => {
         <SafeAreaView style={styles.container}>
             <EHeader title={route.params.title} />
 
-            <PlaySound />
+            <PlayAudio />
 
             {/* <View style={styles.Feedcontainer}>
                 <FlatList

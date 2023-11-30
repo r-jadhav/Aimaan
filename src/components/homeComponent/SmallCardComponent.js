@@ -28,8 +28,8 @@ export default function SmallCardComponent({ item, index }) {
         style={[
           localStyles.root,
           {
-            marginLeft: index % 2 === 0 ? 3 : 0,
-            marginRight: index % 2 === 0 ? 0 : 3,
+            marginLeft: index % 2 === 0 ? 5 : 0,
+            marginRight: index % 2 === 0 ? 0 : 5,
           },
         ]}
         onPress={() => navigation.navigate(item.routes, { title: englishTitle })}
@@ -37,7 +37,7 @@ export default function SmallCardComponent({ item, index }) {
         <View style={{borderWidth:1, borderColor: '#CBCBCB', borderRadius: moderateScale(100), padding:10 }}>
           <Image
             source={{
-              uri: `http://43.228.126.245/mouloodproapi/storage/uploads/${item?.file_name}`,
+              uri: `http://43.228.126.245/aimaanAPI/storage/uploads/${item?.file_name}`,
             }}
             style={localStyles.imageStyle}
           />
@@ -56,19 +56,19 @@ export default function SmallCardComponent({ item, index }) {
 
 const localStyles = StyleSheet.create({
   root: {
-    ...styles.p5,
+    // ...styles.p5,
     ...styles.flex,
     ...styles.justifyCenter,
     width: (deviceWidth - moderateScale(120)) / 2 ,
     ...styles.mt15,
     borderRadius: moderateScale(100),
-    // marginBottom: 10,
+    marginBottom: 15,
   },
   imageStyle: {
     width: 40,
     height: 40,
     alignSelf: 'center',
-    resizeMode: 'cover',
+    resizeMode: 'contain',
   },
   textStyle: {
     ...styles.mt10,

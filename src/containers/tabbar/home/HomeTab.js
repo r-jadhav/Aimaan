@@ -21,7 +21,7 @@ const HomeTab = () => {
   const colors = useSelector(state => state.theme.theme);
   const [extraData, setExtraData] = useState(true);
 
-  const doctors = [
+  const quran = [
     {
       id: '1',
       title: 'Hukum Sholat di Masjid bagi',
@@ -79,7 +79,7 @@ const HomeTab = () => {
           renderItem={renderCategoryItem}
           keyExtractor={(item, index) => index.toString()}
           estimatedItemSize={10}
-          numColumns={4}
+          numColumns={5}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={localStyles.contentContainerStyle}
         />
@@ -91,7 +91,7 @@ const HomeTab = () => {
         <View style={{ marginVertical: 30, }}>
 
           <FlatList
-            data={doctors}
+            data={quran}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
