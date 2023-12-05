@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, Slider, TouchableOpacity, View, ScrollView } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { SafeAreaView, StyleSheet, Text, Slider, TouchableOpacity, View, ScrollView, AppState } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import TrackPlayer, { useProgress } from 'react-native-track-player';
+import TrackPlayer, { useProgress, Event } from 'react-native-track-player';
 import { moderateScale } from '../../common/constants';
 import { listData } from '../../api/constant';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 const PlayAudio = () => {
   const [isPlayingArray, setIsPlayingArray] = useState(Array(listData.length).fill(false));
@@ -12,29 +13,47 @@ const PlayAudio = () => {
 
   const progress = useProgress();
 
+  const pauseOnUnmount = async () => {
+    // Pause and reset the current track when the component is unmounted
+      await TrackPlayer.pause();
+      setIsPlayingArray(Array(listData.length).fill(false));
+      setCurrentTrackIndex(null);
+  }
+
+  useEffect(() => {
+    const unsubscribe = TrackPlayer.addEventListener(Event.PlaybackTrackChanged, (event) => {
+      console.log("Current Track: ", event.nextTrack)
+      if (event.nextTrack) {
+        const updatedIsPlayingArray = [...isPlayingArray]
+        updatedIsPlayingArray[event.nextTrack] = true
+        setIsPlayingArray(updatedIsPlayingArray);
+        setCurrentTrackIndex(event.nextTrack)
+      }
+    })
+    const subscription = AppState.addEventListener('blur', () => {
+      pauseOnUnmount()
+    });
+    return () => {
+      unsubscribe.remove()
+      subscription.remove();
+    }
+  }, [])
+
   useEffect(() => {
     const setupPlayerAndAddTracks = async () => {
       await TrackPlayer.setupPlayer();
       await TrackPlayer.add(listData);
     };
-
     setupPlayerAndAddTracks();
 
     return () => {
-      TrackPlayer.stop();
+      TrackPlayer.pause();
     };
-  }, []);
+  }, [])
 
   useEffect(() => {
-    return () => {
-      // Pause and reset the current track when the component is unmounted
-      if (currentTrackIndex !== null) {
-        TrackPlayer.pause();
-        setIsPlayingArray(Array(listData.length).fill(false));
-        setCurrentTrackIndex(null);
-      }
-    };
-  }, []);
+    return () => pauseOnUnmount()
+  }, [])
 
   const playPause = async (index) => {
     const updatedIsPlayingArray = [...isPlayingArray];
