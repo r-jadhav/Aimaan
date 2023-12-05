@@ -6,50 +6,56 @@ import { moderateScale } from '../../common/constants';
 import { listData } from '../../api/constant';
 
 const PlayAudio = () => {
-
   const [isPlayingArray, setIsPlayingArray] = useState(Array(listData.length).fill(false));
   const [currentTrackIndex, setCurrentTrackIndex] = useState(null);
   const [progressArray, setProgressArray] = useState(Array(listData.length).fill({ position: 0, duration: 0 }));
 
+  const progress = useProgress();
+
   useEffect(() => {
-    TrackPlayer.setupPlayer().then(() => {
-      TrackPlayer.add(listData);
-    });
+    const setupPlayerAndAddTracks = async () => {
+      await TrackPlayer.setupPlayer();
+      await TrackPlayer.add(listData);
+    };
+
+    setupPlayerAndAddTracks();
 
     return () => {
       TrackPlayer.stop();
     };
   }, []);
 
-  const progress = useProgress();
+  useEffect(() => {
+    return () => {
+      // Pause and reset the current track when the component is unmounted
+      if (currentTrackIndex !== null) {
+        TrackPlayer.pause();
+        setIsPlayingArray(Array(listData.length).fill(false));
+        setCurrentTrackIndex(null);
+      }
+    };
+  }, []);
 
-
-  // correct
   const playPause = async (index) => {
     const updatedIsPlayingArray = [...isPlayingArray];
     const isCurrentlyPlaying = currentTrackIndex === index;
-  
-    // Pause the current track if it is playing and is not the clicked track
+
     if (isCurrentlyPlaying && updatedIsPlayingArray[index]) {
       await TrackPlayer.pause();
       updatedIsPlayingArray[index] = false;
     } else {
-      // Pause the currently playing track (if any)
       if (currentTrackIndex !== null) {
         updatedIsPlayingArray[currentTrackIndex] = false;
         await TrackPlayer.pause();
       }
-  
-      // Skip to the new track
+
       await TrackPlayer.skip(index);
-      // Play the new track
       await TrackPlayer.play();
-  
+
       updatedIsPlayingArray[index] = true;
       setCurrentTrackIndex(index);
     }
-  
-    // Update the state
+
     setIsPlayingArray(updatedIsPlayingArray);
   };
 
@@ -75,35 +81,35 @@ const PlayAudio = () => {
                   alignItems: 'center',
                 }}
               >
-        <TouchableOpacity onPress={() => playPause(index)}>
-                <AntDesign
-                  name={isPlayingArray[index] ? 'pausecircle' : 'play'}
-                  size={moderateScale(25)}
-                  color={'#000'}
-                />
-              </TouchableOpacity>
+                <TouchableOpacity onPress={() => playPause(index)}>
+                  <AntDesign
+                    name={isPlayingArray[index] ? 'pausecircle' : 'play'}
+                    size={moderateScale(25)}
+                    color={'#000'}
+                  />
+                </TouchableOpacity>
 
                 <View style={styles.sliderView}>
-                {isPlayingArray[index] ? 
-                 <Slider
-                 value={progress.position}
-                 maximumValue={progress.duration}
-                 minimumValue={0}
-                 thumbStyle={{ width: 20, height: 20 }}
-                 thumbTintColor={'black'}
-                 onValueChange={async (value) => {
-                   await TrackPlayer.seekTo(value);
-                 }}
-               />
-                : <Slider
-                value={progressArray[index].position}
-                minimumValue={0}
-                thumbStyle={{ width: 20, height: 20 }}
-                thumbTintColor={'black'}
-                onValueChange={async (value) => await TrackPlayer.seekTo(value)}
-              />
-               }
-                 
+                  {isPlayingArray[index] ? (
+                    <Slider
+                      value={progress.position}
+                      maximumValue={progress.duration}
+                      minimumValue={0}
+                      thumbStyle={{ width: 20, height: 20 }}
+                      thumbTintColor={'black'}
+                      onValueChange={async (value) => {
+                        await TrackPlayer.seekTo(value);
+                      }}
+                    />
+                  ) : (
+                    <Slider
+                      value={progressArray[index].position}
+                      minimumValue={0}
+                      thumbStyle={{ width: 20, height: 20 }}
+                      thumbTintColor={'black'}
+                      onValueChange={async (value) => await TrackPlayer.seekTo(value)}
+                    />
+                  )}
                 </View>
               </View>
             </View>

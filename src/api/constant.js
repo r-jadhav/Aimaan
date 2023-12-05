@@ -238,7 +238,7 @@ const popularEventData = [
 const listData = [
   {
       id: '1',
-      url: require('../assets/audios/audio.mp3'),
+      url: require('../assets/audios/Al_Falaq_The_Dawn.mp3'),
       artwork: require('../assets/images/ArtsCulture.jpg'),
       title: 'Al Falaq The Dawn',
       category: 'Arts & Culture',
